@@ -8,7 +8,7 @@ import datetime as dt
 
 #from PSI_Fiscal_Calendar import Calendar
 
-main_directory = "C:/Users/mfrangos/Desktop/Michael's GL Cube"
+main_directory = "C:/Users/mfrangos/Desktop/GL Cube"
 os.chdir(f"{main_directory}")
 import PSI_Fiscal_Calendar
 FiscalCalendar = PSI_Fiscal_Calendar.Calendar()
@@ -24,7 +24,7 @@ Account_Mapping_Merged["EBITDA ADJS"] = Account_Mapping_Merged["EBITDA ADJS"].fi
 #Store_List_Updates_Accounting_Department = pd.read_excel("Store List Updates (Accounting Department).xlsx")
 #
 ##Get main dataset
-#os.chdir(f"//petdata/accounting/Janette/GL Cube")
+#os.chdir(f"//data/accounting/GL Cube")
 #GL_Data = pd.read_excel() #PLACE THE GL DOWNLOAD DATA HERE
 #GL_Data.columns = ['GL YEAR', 'Fiscal Month', 'Store', 'DEPT NAME', 'ACCOUNT',
 #       'ACCOUNT NAME', 'GL AMOUNT', 'EBITDA ADJS', 'Account Group',
@@ -40,32 +40,32 @@ Account_Mapping_Merged["EBITDA ADJS"] = Account_Mapping_Merged["EBITDA ADJS"].fi
 
 
 #LOAD DATA - SHORTCUT for now.
-os.chdir(f"//petdata/accounting/Janette/GL Cube")
+os.chdir(f"//data/accounting/GL Cube")
 Merged_Data = pd.read_excel("2017-2018-2019 GL Cube.xlsx", "GL Data")
-Store_list = pd.read_excel("Y:/Brenda/Tableau Datasources/Store List.xlsx")
+Store_list = pd.read_excel("Y:/Tableau Datasources/Store List.xlsx")
 
 
-Stores_with_pet_spa = Store_list.loc[Store_list["Pet Spa"] == "Yes"]
-Stores_with_dog_wash = Store_list.loc[Store_list["Pet Wash"] == "Yes"]
-Stores_with_no_wash_no_spa = Store_list.loc[(Store_list["Pet Wash"] == "No") & (Store_list["Pet Spa"] == "No")]
+Stores_with__spa = Store_list.loc[Store_list[" Spa"] == "Yes"]
+Stores_with__wash = Store_list.loc[Store_list[" Wash"] == "Yes"]
+Stores_with_no_wash_no_spa = Store_list.loc[(Store_list[" Wash"] == "No") & (Store_list[" Spa"] == "No")]
 
-Data_with_dog_wash = Merged_Data.loc[Merged_Data['DEPT #'].isin(Stores_with_dog_wash["Store #"])]
-Data_with_pet_spa = Merged_Data.loc[Merged_Data['DEPT #'].isin(Stores_with_pet_spa["Store #"])]       
+Data_with__wash = Merged_Data.loc[Merged_Data['DEPT #'].isin(Stores_with__wash["Store #"])]
+Data_with__spa = Merged_Data.loc[Merged_Data['DEPT #'].isin(Stores_with__spa["Store #"])]       
 Control_Group = Merged_Data.loc[Merged_Data['DEPT #'].isin(Stores_with_no_wash_no_spa["Store #"])]
-len(Control_Group) + len(Data_with_dog_wash) + len(Data_with_pet_spa)
+len(Control_Group) + len(Data_with__wash) + len(Data_with__spa)
 
                            
 
-Average_pet_spa_footage = 491
+Average__spa_footage = 491
 Average_store_footage = 7539
 
-Data_with_dog_wash.loc[Data_with_dog_wash["ACCOUNT NAME"] == "Groomers Expense              "]['GL AMOUNT'].sum()
-Data_with_pet_spa.loc[Data_with_pet_spa["ACCOUNT NAME"] == "Groomers Expense              "]['GL AMOUNT'].sum()
+Data_with__wash.loc[Data_with__wash["ACCOUNT NAME"] == "Groomers Expense              "]['GL AMOUNT'].sum()
+Data_with__spa.loc[Data_with__spa["ACCOUNT NAME"] == "Groomers Expense              "]['GL AMOUNT'].sum()
 Control_Group.loc[Control_Group["ACCOUNT NAME"] == "Groomers Expense              "]['GL AMOUNT'].sum()
 
 
-SimilarAccounts_spa_and_wash = pd.DataFrame(set(Data_with_dog_wash["ACCOUNT NAME"])).loc[pd.DataFrame(set(Data_with_dog_wash["ACCOUNT NAME"]))[0].isin(pd.DataFrame(set(Data_with_pet_spa["ACCOUNT NAME"]))[0])]                 
-#SimilarAccounts_spa_vs_all = pd.DataFrame(set(Data_with_pet_spa["ACCOUNT NAME"])).loc[pd.DataFrame(set(Data_with_pet_spa["ACCOUNT NAME"]))[0].isin(pd.DataFrame(set(Control_Group["ACCOUNT NAME"]))[0])]
+SimilarAccounts_spa_and_wash = pd.DataFrame(set(Data_with__wash["ACCOUNT NAME"])).loc[pd.DataFrame(set(Data_with__wash["ACCOUNT NAME"]))[0].isin(pd.DataFrame(set(Data_with__spa["ACCOUNT NAME"]))[0])]                 
+#SimilarAccounts_spa_vs_all = pd.DataFrame(set(Data_with__spa["ACCOUNT NAME"])).loc[pd.DataFrame(set(Data_with__spa["ACCOUNT NAME"]))[0].isin(pd.DataFrame(set(Control_Group["ACCOUNT NAME"]))[0])]
 
 def calculate_average_or_sum(Data,function):
   accounts = []
@@ -78,18 +78,18 @@ def calculate_average_or_sum(Data,function):
       lines.append(Data.loc[Data["ACCOUNT NAME"] == f"{account}"]['GL AMOUNT'].sum())
   return pd.DataFrame({"ACCOUNT NAME":accounts, "GL AMOUNT":lines })
 
-Pet_Spa_Account_Averages = calculate_average_or_sum(Data_with_pet_spa,"mean")
-Dog_Wash_Account_Averages = calculate_average_or_sum(Data_with_dog_wash,"mean")
+_Spa_Account_Averages = calculate_average_or_sum(Data_with__spa,"mean")
+_Wash_Account_Averages = calculate_average_or_sum(Data_with__wash,"mean")
 Control_Group_Account_Averages = calculate_average_or_sum(Control_Group,"mean")
 
 
 #MERGE THE DATA
-temp1 = Data_with_pet_spa
+temp1 = Data_with__spa
 temp1.columns = ['GL YEAR', 'Fiscal Month', 'Store #', 'DEPT NAME', 'ACCT #',
        'ACCOUNT NAME', 'GL AMOUNT', 'EBITDA ADJS', 'Account Group',
        'Account Group #', 'LOCATION TYPE', 'Year Opened', 'Region', 'District',
        'Unnamed: 14', 'Unnamed: 15']
-Merged_Pet_Spa_Data = pd.merge(Data_with_pet_spa,Store_list, on = "Store #")
+Merged__Spa_Data = pd.merge(Data_with__spa,Store_list, on = "Store #")
 
 temp1 = Merged_Data
 temp1.columns = ['GL YEAR', 'Fiscal Month', 'Store #', 'DEPT NAME', 'ACCT #',
@@ -303,7 +303,7 @@ for store in Store_list["Store #"]:
 #Select All Stores. Or you can replace this
 Selected_Stores = [store for store in Store_list["Store #"]]
 
-os.chdir(f"//petdata/accounting/Janette/GL Cube")
+os.chdir(f"//data/accounting/Janette/GL Cube")
 GL_2015 = pd.read_excel("GL Cube 2015.xlsx", "2015")
 GL_2016 = pd.read_excel("GL Cube 2016.xlsx", "2016")
 
