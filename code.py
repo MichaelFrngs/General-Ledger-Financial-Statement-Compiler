@@ -446,4 +446,4 @@ groomer_sales_by_store = pd.DataFrame()
 for store_PL in List_of_Final_DFs:
   Data = store_PL.loc[store_PL["ACCOUNT NAME"] == "Sales - Groomers              "]
   groomer_sales_by_store = pd.concat([groomer_sales_by_store,Data], axis=1)
-  break
+
